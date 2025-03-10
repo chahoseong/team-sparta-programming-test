@@ -1,42 +1,47 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class EnemyMovement : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Rigidbody2D physicsBody;
-    [SerializeField] private Transform trackTransform;
-    
+    [SerializeField] private Rigidbody characterBody;
+    [SerializeField] private CapsuleCollider capsuleCollider; 
+
     [Header("Settings")]
-    [SerializeField] private Vector2 initialVelocity;
+    [SerializeField] private float moveVelocity;
+    [SerializeField] private float jumpSpeed;
 
-    private bool isGrounded = true;
+    private WaitForFixedUpdate waitForFixedUpdate = new();
+
+    private void FixedUpdate()
+    {
+        if (characterBody.velocity.y <= 0.0f)
+        {
+            if (Mathf.Abs(characterBody.velocity.x) < Mathf.Abs(moveVelocity))
+            {
+                characterBody.AddForce(Vector3.right * moveVelocity, ForceMode.VelocityChange);
+            }
+        }
+    }
     
-    public bool IsGrounded => isGrounded;
-
-    private void Start()
+    public void Jump(float height)
     {
-        physicsBody.velocity = initialVelocity;
+        StartCoroutine(Jumping(height));
     }
 
-    private void Update()
+    private IEnumerator Jumping(float height)
     {
-        isGrounded = transform.position.y <= trackTransform.position.y;
+        yield return waitForFixedUpdate;
 
-        if (isGrounded && physicsBody.velocity.y <= 0)
-        {
-            transform.position = new Vector3(transform.position.x, trackTransform.position.y, transform.position.z);
-        }
-        else
-        {
-            physicsBody.velocity += Physics2D.gravity * Time.deltaTime;
-        }
-    }
+        characterBody.AddForce(Vector3.up * jumpSpeed, ForceMode.VelocityChange);
+        characterBody.useGravity = false;
+        
+        float destination = transform.position.y + height;
+        yield return new WaitWhile(() => transform.position.y < destination);
 
-    public void Jump(float force)
-    {
-        physicsBody.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+        characterBody.AddForce(Vector3.right * moveVelocity, ForceMode.VelocityChange);
+        characterBody.useGravity = true;
     }
 }
