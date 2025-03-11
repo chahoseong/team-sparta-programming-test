@@ -4,6 +4,9 @@ public class MoveState : EnemyState
 {
     private Vector3 cachedVelocity;
     private bool isTruckContacted;
+    private bool canJump = true;
+    
+    private Collider[] overlaps = new Collider[1];
     
     public override void OnEnter(EnemyController owner)
     {
@@ -20,6 +23,19 @@ public class MoveState : EnemyState
 
     public override void OnUpdate(EnemyController owner)
     {
+        Vector3 point1 = owner.PhysicalBoundary.bounds.center + Vector3.up * owner.PhysicalBoundary.bounds.extents.y;
+        Vector3 point2 = owner.PhysicalBoundary.bounds.center + Vector3.down * owner.PhysicalBoundary.bounds.extents.y;
+        if (Physics.OverlapCapsuleNonAlloc(point1, point2,
+                owner.PhysicalBoundary.bounds.extents.x,
+                overlaps) <= 2)
+        {
+            canJump = true;
+        }
+        else
+        {
+            canJump = false;
+        }
+        
         cachedVelocity = owner.PhysicalBody.velocity;
     }
 
@@ -29,7 +45,7 @@ public class MoveState : EnemyState
         {
             Vector3 deltaPosition = collision.transform.position - owner.transform.position;
             
-            if (cachedVelocity.x < 0.0f && deltaPosition is { x: < 0.0f })
+            if (canJump && cachedVelocity.x < 0.0f && deltaPosition is { x: < 0.0f, y: >= 0.0f })
             {
                 JumpingState jumpingState = new JumpingState(collision.collider.bounds.size.y * 0.85f);
                 owner.ChangeState(jumpingState);
