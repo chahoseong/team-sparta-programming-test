@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 3283359312610575675}
   - component: {fileID: 5293437614877405038}
   - component: {fileID: 398510698960352206}
-  - component: {fileID: 3376241983777886404}
   m_Layer: 6
   m_Name: ZombieMelee
   m_TagString: Enemy
@@ -105,7 +104,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.25
-  m_Height: 1
+  m_Height: 1.05
   m_Direction: 1
   m_Center: {x: -0.2, y: 0.5, z: 0}
 --- !u!114 &398510698960352206
@@ -120,24 +119,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98fe1cf849f7ff049acb77c4b388d970, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  capsuleCollider: {fileID: 5293437614877405038}
-  movement: {fileID: 3376241983777886404}
---- !u!114 &3376241983777886404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 319310827380095937}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f15a00eb875eb524da2156d64abdb21e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterBody: {fileID: 3283359312610575675}
-  capsuleCollider: {fileID: 5293437614877405038}
-  moveVelocity: -3
+  physicalBody: {fileID: 3283359312610575675}
+  physicalBoundary: {fileID: 5293437614877405038}
+  moveSpeed: 2
   jumpSpeed: 3
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &2094693183665648150
 GameObject:
   m_ObjectHideFlags: 0
